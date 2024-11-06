@@ -2,12 +2,11 @@
 import {onMounted, reactive, ref} from "vue";
 import {useRoute} from 'vue-router';
 
-import {useArticleStore} from '../../stores/store-articles'
-import {useRootStore} from '../../stores/root'
+import {useArticleStore} from '@/stores/store-articles'
+import {useRootStore} from '@/stores/root'
 
 import Actions from "./components/Actions.vue";
 import Table from "./components/Table.vue";
-import Filters from './components/Filters.vue'
 
 const store = useArticleStore();
 const root = useRootStore();
@@ -16,9 +15,15 @@ const route = useRoute();
 import { useConfirm } from "primevue/useconfirm";
 const confirm = useConfirm();
 
+function handleScreenResize() {
+    store.setScreenSize();
+}
 
 onMounted(async () => {
     document.title = 'Articles - HelloWorld';
+
+    window.addEventListener('resize', handleScreenResize);
+
     store.item = null;
     /**
      * call onLoad action when List view loads
@@ -64,73 +69,92 @@ const toggleCreateMenu = (event) => {
 </script>
 <template>
 
-    <div class="grid" v-if="store.assets">
+    <div class="w-full" v-if="store.assets">
 
-        <div :class="'col-'+(store.show_filters?9:store.list_view_width)">
-            <Panel class="is-small">
+        <div class="lg:flex lg:space-x-4 items-start">
 
-                <template class="p-1" #header>
 
-                    <div class="flex flex-row">
-                        <div >
-                            <b class="mr-1">Articles</b>
-                            <Badge v-if="store.list && store.list.total > 0"
-                                   :value="store.list.total">
-                            </Badge>
+
+            <!--left-->
+            <div v-if="store.getLeftColumnClasses"
+                 :class="store.getLeftColumnClasses"
+
+                 class="mb-4 lg:mb-0">
+
+                <Panel :pt="root.panel_pt">
+                    <template #header>
+
+                        <div class="flex flex-row">
+                            <div >
+                                <b class="mr-1">Projects</b>
+                                <Badge v-if="store.list && store.list.total > 0"
+                                       :value="store.list.total">
+                                </Badge>
+                            </div>
+
                         </div>
 
-                    </div>
+                    </template>
 
-                </template>
+                    <template #icons>
 
-                <template #icons>
+                        <InputGroup >
+                            <Button data-testid="projects-list-create"
+                                    size="small"
+                                    icon="pi pi-plus"
+                                    label="Create"
+                                    @click="store.toForm()">
 
-                    <div class="p-inputgroup">
+                            </Button>
 
-                    <Button data-testid="articles-list-create"
-                            class="p-button-sm"
-                            @click="store.toForm()">
-                        <i class="pi pi-plus mr-1"></i>
-                        Create
-                    </Button>
+                            <Button data-testid="projects-list-reload"
+                                    size="small"
+                                    icon="pi pi-refresh"
+                                    @click="store.getList()">
+                            </Button>
 
-                    <Button data-testid="articles-list-reload"
-                            class="p-button-sm"
-                            @click="store.getList()">
-                        <i class="pi pi-refresh mr-1"></i>
-                    </Button>
+                            <!--form_menu-->
 
-                    <!--form_menu-->
-
-                    <Button v-if="root.assets && root.assets.module
+                            <Button v-if="root.assets && root.assets.module
                                                 && root.assets.module.is_dev"
-                        type="button"
-                        @click="toggleCreateMenu"
-                        class="p-button-sm"
-                        data-testid="articles-create-menu"
-                        icon="pi pi-angle-down"
-                        aria-haspopup="true"/>
+                                    type="button"
+                                    @click="toggleCreateMenu"
+                                    size="small"
+                                    data-testid="projects-create-menu"
+                                    icon="pi pi-angle-down"
+                                    aria-haspopup="true"/>
+                            <Menu ref="create_menu"
+                                  :model="store.list_create_menu"
+                                  :popup="true" />
+                        </InputGroup>
 
-                    <Menu ref="create_menu"
-                          :model="store.list_create_menu"
-                          :popup="true" />
+                    </template>
 
-                    <!--/form_menu-->
 
-                    </div>
+                    <Actions/>
 
-                </template>
+                    <Table/>
 
-                <Actions/>
+                </Panel>
 
-                <Table/>
 
-            </Panel>
+            </div>
+            <!--/left-->
+
+
+            <!--right-->
+            <div v-if="store.getRightColumnClasses"
+                 :class="store.getRightColumnClasses">
+
+                <RouterView/>
+
+            </div>
+            <!--/right-->
+
+
+
         </div>
 
-         <Filters/>
-
-        <RouterView/>
 
     </div>
 

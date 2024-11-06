@@ -2,9 +2,11 @@
 import {onMounted, ref, watch} from "vue";
 import {useRoute} from 'vue-router';
 
-import { useArticleStore } from '../../stores/store-articles'
+import { useRootStore } from '@/stores/root'
+import { useArticleStore } from '@/stores/store-articles'
 
-import VhViewRow from '../../vaahvue/vue-three/primeflex/VhViewRow.vue';
+import VhViewRow from '../../vaahvue/components/VhViewRow.vue';
+const root = useRootStore();
 const store = useArticleStore();
 const route = useRoute();
 
@@ -40,83 +42,81 @@ const toggleItemMenu = (event) => {
 </script>
 <template>
 
-    <div class="col-6" >
+    <Panel :pt="root.panel_pt" v-if="store && store.item">
 
-        <Panel class="is-small" v-if="store && store.item">
+        <template class="p-1" #header>
 
-            <template class="p-1" #header>
-
-                <div class="p-panel-title w-7 white-space-nowrap
+            <div class="p-panel-title w-7 white-space-nowrap
                 overflow-hidden text-overflow-ellipsis">
-                    #{{store.item.id}}
-                </div>
+                #{{store.item.id}}
+            </div>
 
-            </template>
+        </template>
 
-            <template #icons>
+        <template #icons>
 
 
-                <div class="p-inputgroup">
+            <div class="p-inputgroup">
 
-                    <Button label="Edit"
-                            class="p-button-sm"
-                            @click="store.toEdit(store.item)"
-                            data-testid="articles-item-to-edit"
-                            icon="pi pi-save"/>
-
-                    <!--item_menu-->
-                    <Button
-                        type="button"
+                <Button label="Edit"
                         class="p-button-sm"
-                        @click="toggleItemMenu"
-                        data-testid="articles-item-menu"
-                        icon="pi pi-angle-down"
-                        aria-haspopup="true"/>
+                        @click="store.toEdit(store.item)"
+                        data-testid="articles-item-to-edit"
+                        icon="pi pi-save"/>
 
-                    <Menu ref="item_menu_state"
-                          :model="store.item_menu_list"
-                          :popup="true" />
-                    <!--/item_menu-->
+                <!--item_menu-->
+                <Button
+                    type="button"
+                    class="p-button-sm"
+                    @click="toggleItemMenu"
+                    data-testid="articles-item-menu"
+                    icon="pi pi-angle-down"
+                    aria-haspopup="true"/>
 
-                    <Button class="p-button-primary p-button-sm"
-                            icon="pi pi-times"
-                            data-testid="articles-item-to-list"
-                            @click="store.toList()"/>
+                <Menu ref="item_menu_state"
+                      :model="store.item_menu_list"
+                      :popup="true" />
+                <!--/item_menu-->
 
-                </div>
+                <Button class="p-button-primary p-button-sm"
+                        icon="pi pi-times"
+                        data-testid="articles-item-to-list"
+                        @click="store.toList()"/>
+
+            </div>
 
 
 
-            </template>
+        </template>
 
 
-            <div class="mt-2" v-if="store.item">
+        <div class="mt-2" v-if="store.item">
 
-                <Message severity="error"
-                         class="p-container-message"
-                         :closable="false"
-                         icon="pi pi-trash"
-                         v-if="store.item.deleted_at">
+            <Message severity="error"
+                     class="p-container-message"
+                     :closable="false"
+                     icon="pi pi-trash"
+                     v-if="store.item.deleted_at">
 
-                    <div class="flex align-items-center justify-content-between">
+                <div class="flex align-items-center justify-content-between">
 
-                        <div class="">
-                            Deleted {{store.item.deleted_at}}
-                        </div>
-
-                        <div class="ml-3">
-                            <Button label="Restore"
-                                    class="p-button-sm"
-                                    data-testid="articles-item-restore"
-                                    @click="store.itemAction('restore')">
-                            </Button>
-                        </div>
-
+                    <div class="">
+                        Deleted {{store.item.deleted_at}}
                     </div>
 
-                </Message>
+                    <div class="ml-3">
+                        <Button label="Restore"
+                                class="p-button-sm"
+                                data-testid="articles-item-restore"
+                                @click="store.itemAction('restore')">
+                        </Button>
+                    </div>
 
-                <div class="p-datatable p-component p-datatable-responsive-scroll p-datatable-striped p-datatable-sm">
+                </div>
+
+            </Message>
+
+            <div class="p-datatable p-component p-datatable-responsive-scroll p-datatable-striped p-datatable-sm">
                 <table class="p-datatable-table overflow-wrap-anywhere">
                     <tbody class="p-datatable-tbody">
                     <template v-for="(value, column) in store.item ">
@@ -150,7 +150,7 @@ const toggleItemMenu = (event) => {
                         <template v-else>
                             <VhViewRow :label="column"
                                        :value="value"
-                                       />
+                            />
                         </template>
 
 
@@ -159,10 +159,8 @@ const toggleItemMenu = (event) => {
 
                 </table>
 
-                </div>
             </div>
-        </Panel>
-
-    </div>
+        </div>
+    </Panel>
 
 </template>

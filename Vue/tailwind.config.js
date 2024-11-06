@@ -7,7 +7,11 @@ export default {
     ],
     plugins: [require('tailwindcss-primeui')],
   theme: {
-    extend: {},
+    extend: {
+        lineHeight: {
+            '0': '0',
+        },
+    },
   },
 
 }

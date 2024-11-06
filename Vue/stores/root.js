@@ -12,6 +12,20 @@ export const useRootStore = defineStore({
         assets: null,
         gutter: 20,
         assets_is_fetching: true,
+        panel_pt: {
+            header:{
+                class: "p-2"
+            },
+            content:{
+                class: "p-2"
+            }
+        },
+        datatable_pt:{
+            column:{
+                class: "py-[0.17rem] line-height-0"
+            },
+
+        }
     }),
     getters: {},
     actions: {
