@@ -43,7 +43,7 @@ const useVaah = vaah();
 
 
              <Column field="updated_at" header="Updated"
-                     v-if="store.isListView()"
+                     v-if="store.isListView() && !store.isMobile"
                      style="width:150px;"
                      :sortable="true">
 
@@ -53,7 +53,7 @@ const useVaah = vaah();
 
              </Column>
 
-             <Column field="is_active" v-if="store.isListView()"
+             <Column field="is_active" v-if="store.isListView() && !store.isMobile"
                      :sortable="true"
                      style="width:100px;"
                      header="Is Active">
@@ -91,7 +91,7 @@ const useVaah = vaah();
 
                          <Button class="p-button-tiny p-button-danger p-button-text"
                                  data-testid="articles-table-action-trash"
-                                 v-if="store.isListView() && !prop.data.deleted_at"
+                                 v-if="store.isListView() && !prop.data.deleted_at && !store.isMobile"
                                  @click="store.itemAction('trash', prop.data)"
                                  v-tooltip.top="'Trash'"
                                  icon="pi pi-trash" />
@@ -99,7 +99,7 @@ const useVaah = vaah();
 
                          <Button class="p-button-tiny p-button-success p-button-text"
                                  data-testid="articles-table-action-restore"
-                                 v-if="store.isListView() && prop.data.deleted_at"
+                                 v-if="store.isListView() && prop.data.deleted_at && !store.isMobile"
                                  @click="store.itemAction('restore', prop.data)"
                                  v-tooltip.top="'Restore'"
                                  icon="pi pi-replay" />
